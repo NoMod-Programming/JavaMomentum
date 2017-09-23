@@ -31,7 +31,6 @@ public class Robot extends IterativeRobot {
 	
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
-	PIDCommand pIDCommand; 
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -44,9 +43,10 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-		CameraServer.getInstance().startAutomaticCapture();
-		pIDCommand = new TurnWithGyro(10); 
-		LiveWindow.addActuator("TURN ANGLE", "PID Controller", ((TurnWithGyro) pIDCommand).getPID());
+		//CameraServer.getInstance().startAutomaticCapture();
+		PIDCommand pidCommand = new TurnWithGyro(-20);
+		SmartDashboard.putData("PID TURN", new TurnWithGyro(-20));
+		Robot.SUB_DRIVE_BASE.resetGyro(); // reset Gyro at the start of the Robot
 	}
 
 	/**
@@ -78,14 +78,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		autonomousCommand = chooser.getSelected();
-
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
 		 * = new MyAutoCommand(); break; case "Default Auto": default:
 		 * autonomousCommand = new ExampleCommand(); break; }
 		 */
-
 		// schedule the autonomous command (example)
 		if (autonomousCommand != null)
 			autonomousCommand.start();
@@ -107,7 +105,6 @@ public class Robot extends IterativeRobot {
 		// this line or comment it out.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
-		SmartDashboard.putData("Turn", new TurnWithGyro(10));
 	}
 
 	/**

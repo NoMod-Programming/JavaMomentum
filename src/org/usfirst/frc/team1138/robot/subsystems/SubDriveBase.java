@@ -54,10 +54,10 @@ public class SubDriveBase extends Subsystem{
 		
 		// LiveWindow
 		LiveWindow.addSensor("SubDriveBase", "Gyro", gyroAccel);
-		LiveWindow.addActuator("SubDriveBase", "Left Front Motor", leftFrontBaseMotor);
-		LiveWindow.addActuator("SubDriveBase", "Right Front Motor", rightFrontBaseMotor);
-		LiveWindow.addActuator("SubDriveBase", "Left Rear Motor", leftRearBaseMotor);
-		LiveWindow.addActuator("SubDriveBase", "Right Rear Motor", rightRearBaseMotor);
+//		LiveWindow.addActuator("SubDriveBase", "Left Front Motor", leftFrontBaseMotor);
+//		LiveWindow.addActuator("SubDriveBase", "Right Front Motor", rightFrontBaseMotor);
+//		LiveWindow.addActuator("SubDriveBase", "Left Rear Motor", leftRearBaseMotor);
+//		LiveWindow.addActuator("SubDriveBase", "Right Rear Motor", rightRearBaseMotor);
 	}
 	
 	public void initDefaultCommand() {
@@ -75,17 +75,8 @@ public class SubDriveBase extends Subsystem{
 	public void tankDrive(double left, double right) {
 		if(left > RobotMap.KDeadZoneLimit || left < -RobotMap.KDeadZoneLimit) leftFrontBaseMotor.set(left);
 		else leftFrontBaseMotor.set(0);
-		if(right > RobotMap.KDeadZoneLimit || right < -RobotMap.KDeadZoneLimit) rightFrontBaseMotor.set(left);
+		if(right > RobotMap.KDeadZoneLimit || right < -RobotMap.KDeadZoneLimit) rightFrontBaseMotor.set(right);
 		else rightFrontBaseMotor.set(0);
-	}
-	
-	public void drivePID(double output) {
-		leftFrontBaseMotor.pidWrite(output);
-		rightFrontBaseMotor.pidWrite(output);
-	}
-	
-	public double getOutput() {
-		return leftFrontBaseMotor.getOutputVoltage();
 	}
 	
 	public void highShiftBase() {
@@ -116,7 +107,7 @@ public class SubDriveBase extends Subsystem{
 	}
 	
 	public double getAngle() {
-		return gyroAccel.getAngle(); 
+		return gyroAccel.getAngle();
 	}
 	
 	public Value getLiftState() {
