@@ -7,10 +7,10 @@ package org.usfirst.frc.team1138.robot;
  * doubleing around.
  */
 public class RobotMap {
-	public static final int KLeftRearBaseTalon =  4;
-	public static final int KLeftFrontBaseTalon = 2 ;
-	public static final int KRightRearBaseTalon = 3 ;
-	public static final int KRightFrontBaseTalon = 1 ;
+	public static final int KLeftRearBaseTalon = 3 ;
+	public static final int KLeftFrontBaseTalon = 1  ;
+	public static final int KRightRearBaseTalon = 4  ;
+	public static final int KRightFrontBaseTalon = 2  ;
 	public static final int KFlywheelRightTalon = 5;
 	public static final int KFlywheelLeftTalon = 6;
 	public static final int KFilterFrontTalon = 7;

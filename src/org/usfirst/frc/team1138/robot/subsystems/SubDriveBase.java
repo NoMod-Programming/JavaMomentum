@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1138.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1138.robot.RobotMap;
 import org.usfirst.frc.team1138.robot.commands.DriveWithJoy;
 
@@ -42,6 +43,7 @@ public class SubDriveBase extends Subsystem{
 		
 		//Gyro & Accel
 		gyroAccel = new AHRS(Port.kMXP);
+		SmartDashboard.putBoolean("Navx Connection: ", gyroAccel.isConnected());
 		gyroAccel.zeroYaw();
 		
 		//Encoders 
@@ -72,7 +74,7 @@ public class SubDriveBase extends Subsystem{
 		rightRearBaseMotor.setSafetyEnabled(true);
 	}
 	
-	public void tankDrive(double left, double right) {
+	public void tankDrive(double left, double right) { // The side with the GEAR IS THE FRONT!
 		if(left > RobotMap.KDeadZoneLimit || left < -RobotMap.KDeadZoneLimit) leftFrontBaseMotor.set(left);
 		else leftFrontBaseMotor.set(0);
 		if(right > RobotMap.KDeadZoneLimit || right < -RobotMap.KDeadZoneLimit) rightFrontBaseMotor.set(right);

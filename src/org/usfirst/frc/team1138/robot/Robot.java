@@ -1,18 +1,13 @@
 
 package org.usfirst.frc.team1138.robot;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import org.usfirst.frc.team1138.robot.commands.ExampleCommand;
-import org.usfirst.frc.team1138.robot.commands.TurnWithGyro;
 import org.usfirst.frc.team1138.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team1138.robot.subsystems.SubDriveBase;
 
@@ -27,10 +22,9 @@ public class Robot extends IterativeRobot {
 
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static SubDriveBase SUB_DRIVE_BASE; 
-	public static OI oi;
-	
-	Command autonomousCommand;
-	SendableChooser<Command> chooser = new SendableChooser<>();
+	private static OI oi;
+	private Command autonomousCommand;
+	private SendableChooser<Command> chooser = new SendableChooser<>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -38,16 +32,14 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		SUB_DRIVE_BASE = new SubDriveBase(); 
+		SUB_DRIVE_BASE = new SubDriveBase();
 		oi = new OI();
 		chooser.addDefault("Default Auto", new ExampleCommand());
-		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-		//CameraServer.getInstance().startAutomaticCapture();
-		PIDCommand pidCommand = new TurnWithGyro(-20);
-		SmartDashboard.putData("PID TURN", new TurnWithGyro(-20));
-		Robot.SUB_DRIVE_BASE.resetGyro(); // reset Gyro at the start of the Robot
-	}
+//		SmartDashboard.putData("PID TURN", new TurnWithGyro(0));
+		// chooser.addObject("My Auto", new MyAutoCommand());
+//        Robot.SUB_DRIVE_BASE.resetGyro(); // reset Gyro at the start of the Robot
+    }
 
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
@@ -105,6 +97,8 @@ public class Robot extends IterativeRobot {
 		// this line or comment it out.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
+		SmartDashboard.putNumber("setAngle", 0);
+		Robot.SUB_DRIVE_BASE.resetGyro();
 	}
 
 	/**
@@ -113,6 +107,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		SmartDashboard.putNumber("angle", Robot.SUB_DRIVE_BASE.getAngle());
 	}
 
 	/**
@@ -122,6 +117,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testInit() {
 		// TODO Auto-generated method stub
+		Robot.SUB_DRIVE_BASE.resetGyro();
 	}
 	
 	@Override

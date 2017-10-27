@@ -1,9 +1,11 @@
 package org.usfirst.frc.team1138.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1138.robot.commands.LiftBase;
 import org.usfirst.frc.team1138.robot.commands.ShiftBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import org.usfirst.frc.team1138.robot.commands.TurnWithGyro;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -31,7 +33,7 @@ public class OI {
 		btnLB = new JoystickButton(xBoxController, RobotMap.KLeftBumper) ;	//Decrease Flywheel Speed
 		btnRB = new JoystickButton(xBoxController, RobotMap.KRightBumpter) ;	//Increase Flywheel Speed
 
-		shiftBtn.whenPressed(new ShiftBase());
+		shiftBtn.whenPressed(new TurnWithGyro(SmartDashboard.getNumber("setAngle", 0)));
 		liftBtn.whenPressed(new LiftBase());
 //		buttonX->WhenPressed(new EngageShooter());
 //		buttonY->WhenPressed(new DisengageShooter());
