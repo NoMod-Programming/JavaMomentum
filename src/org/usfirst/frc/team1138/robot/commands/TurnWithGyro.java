@@ -6,11 +6,19 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
+/**
+ * @author Zheyuan Hu
+ * @version 1.0.0
+ * This Command requires Robot.SUB_DRIVE_BASE
+ */
 public class TurnWithGyro extends PIDCommand{
 	private static double P = 0.8 ,I =0.0 ,D = 0.0;
 	private PIDController turnController;
 
-	public TurnWithGyro(double angle) {
+    /**
+     * @param angle the desired angle to turn
+     */
+    public TurnWithGyro(double angle) {
 		super("Turn Angle", P, I, D);
 		requires(Robot.SUB_DRIVE_BASE);
 		turnController = this.getPIDController(); 

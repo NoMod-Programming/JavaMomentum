@@ -4,8 +4,13 @@ import org.usfirst.frc.team1138.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
+/**
+ * @author Zheyuan Hu
+ * @version 1.0.0
+ * This Command requires Robot.SUB_DRIVE_BASE
+ */
 public class ShiftBase extends Command{
-	public ShiftBase() {
+    public ShiftBase() {
 		// TODO Auto-generated constructor stub
 		requires(Robot.SUB_DRIVE_BASE);
 	}

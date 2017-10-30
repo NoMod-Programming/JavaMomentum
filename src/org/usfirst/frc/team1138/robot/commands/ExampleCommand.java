@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc.team1138.robot.Robot;
 
 /**
- *
+ * @author Zheyuan Hu
+ * @version 1.0.0
  */
 public class ExampleCommand extends Command {
 	public ExampleCommand() {

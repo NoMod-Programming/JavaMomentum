@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1138.robot;
 
+import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -17,9 +18,10 @@ import org.usfirst.frc.team1138.robot.subsystems.SubDriveBase;
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the manifest file in the resource
  * directory.
+ * @author Zheyuan Hu
+ * @version 1.0.0
  */
 public class Robot extends IterativeRobot {
-
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static SubDriveBase SUB_DRIVE_BASE; 
 	private static OI oi;
@@ -116,7 +118,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void testInit() {
-		// TODO Auto-generated method stub
 		Robot.SUB_DRIVE_BASE.resetGyro();
 	}
 	
