@@ -5,6 +5,8 @@ package org.usfirst.frc.team1138.robot;
  * to a variable name. This provides flexibility changing wiring, makes checking
  * the wiring easier and significantly reduces the number of magic numbers
  * doubleing around.
+ * @author Zheyuan Hu
+ * @version 1.0.0
  */
 public class RobotMap {
 	public static final int KLeftRearBaseTalon = 3 ;

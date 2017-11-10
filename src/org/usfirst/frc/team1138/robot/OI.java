@@ -10,11 +10,14 @@ import org.usfirst.frc.team1138.robot.commands.TurnWithGyro;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
+ * @author Zheyuan Hu
+ * @version 1.0.0
  */
+
 public class OI {
 	private Joystick leftController, rightController, xBoxController; 
 	private JoystickButton shiftBtn, liftBtn; // Logitech Buttons 
-	private JoystickButton btnA, btnB, btnX, btnY, btnLB, btnRB; 
+	private JoystickButton btnA, btnB, btnX, btnY, btnLB, btnRB;
 	
 	public OI() {
 		leftController = new Joystick(RobotMap.KLeftJoystick);
@@ -43,11 +46,11 @@ public class OI {
 //		buttonRB->WhenPressed(new CloseEsophagus());	//buttonRB->WhenPressed(new FlywheelIncreaseSpeed());
 	}
 	
-	public double getRightController() {			//Right controller is right side drive
+	public double getRightControllerY() {			//Right controller is right side drive
 		return rightController.getY();
 	}
 
-	public double getLeftController() {			//Left controller is left side drive
+	public double getLeftControllerY() {			//Left controller is left side drive
 		return leftController.getY();
 	}
 

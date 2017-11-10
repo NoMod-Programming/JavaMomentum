@@ -5,9 +5,14 @@ import org.usfirst.frc.team1138.robot.Robot;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Command;
 
+/**
+ * @author Zheyuan Hu
+ * @version 1.0.0
+ * This Command requires Robot.SUB_DRIVE_BASE
+ */
 public class DriveWithJoy extends Command{
-	private OI oi; 
-	public DriveWithJoy() {
+	private OI oi;
+    public DriveWithJoy() {
 		// TODO Auto-generated constructor stub
 		requires(Robot.SUB_DRIVE_BASE);
 		oi = new OI(); 
@@ -23,8 +28,8 @@ public class DriveWithJoy extends Command{
 	protected void execute() {
 		// two hand or one hand 
 		if (Robot.SUB_DRIVE_BASE.getLiftState() == DoubleSolenoid.Value.kForward)
-			Robot.SUB_DRIVE_BASE.tankDrive(oi.getRightController(), oi.getRightController());
-		else Robot.SUB_DRIVE_BASE.tankDrive(oi.getLeftController(), oi.getRightController());
+			Robot.SUB_DRIVE_BASE.tankDrive(oi.getRightControllerY(), oi.getRightControllerY());
+		else Robot.SUB_DRIVE_BASE.tankDrive(oi.getLeftControllerY(), oi.getRightControllerY());
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
