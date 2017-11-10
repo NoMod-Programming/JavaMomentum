@@ -7,19 +7,18 @@ import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class TurnWithGyro extends PIDCommand{
-	private static double P = 0.8 ,I =0.0 ,D = 0.0;
+	private static double P = 0.7 ,I =0.0 ,D = 0.0;
 	private PIDController turnController;
 
-	public TurnWithGyro(double angle) {
+	public TurnWithGyro() {
 		super("Turn Angle", P, I, D);
 		requires(Robot.SUB_DRIVE_BASE);
 		turnController = this.getPIDController(); 
 		turnController.setInputRange(-180, 180);
 		turnController.setOutputRange(-1, 1);
-		turnController.setAbsoluteTolerance(1.0);
+		turnController.setAbsoluteTolerance(1.5);
 		turnController.setContinuous(true);
 
-		//turnController.setSetpoint(SmartDashboard.getNumber("setAngle",0));
 		LiveWindow.addActuator("Please Work", "PID CONTROLLER", turnController);
 		System.out.println("Inited");
 		Robot.SUB_DRIVE_BASE.resetGyro();
@@ -28,10 +27,7 @@ public class TurnWithGyro extends PIDCommand{
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		double setAngle = SmartDashboard.getNumber("setAngle", 0);
-		//if (setAngle != 0)
-		System.out.println("PLEASE WORK! " + setAngle);
-		turnController.setSetpoint(setAngle);
+
 	}
 	
 	@Override
@@ -44,34 +40,50 @@ public class TurnWithGyro extends PIDCommand{
 	@Override
 	protected void usePIDOutput(double output) {
 		// The side with the GEAR IS THE FRONT!
-		if (this.returnPIDInput()-this.getSetpoint() > 0) { // need to turn left
-			System.out.println("turn left");
-			System.out.println("Left Motor: " + (-output) + "Right Motor: " + (output));
-			Robot.SUB_DRIVE_BASE.tankDrive(-output,output);
+		if (!turnController.onTarget()){
+			if (this.returnPIDInput()-this.getSetpoint() > 0) { // need to turn left
+				System.out.println("turn left");
+				System.out.println("Left Motor: " + (-output) + "Right Motor: " + (output));
+				Robot.SUB_DRIVE_BASE.tankDrive(-output,output);
+			}
+			else if (this.returnPIDInput()-this.getSetpoint() < 0) { // need to turn right
+				System.out.println("turn right");
+				System.out.println("Left Motor: " + (-output) + "Right Motor: " + (output));
+				Robot.SUB_DRIVE_BASE.tankDrive(-output,output);
+			}
+			System.out.println("set point: " + this.getSetpoint());
+			System.out.println("Current Angle: " + Robot.SUB_DRIVE_BASE.getAngle());
+			System.out.println("Error: " + (Robot.SUB_DRIVE_BASE.getAngle()-this.getSetpoint()));
+			System.out.println("Input: " + this.returnPIDInput());
+			System.out.println("On Target: " + turnController.onTarget());
 		}
-		else if (this.returnPIDInput()-this.getSetpoint() < 0) { // need to turn right
-			System.out.println("turn right");
-			System.out.println("Left Motor: " + (-output) + "Right Motor: " + (output));
-			Robot.SUB_DRIVE_BASE.tankDrive(-output,output);
+		else {
+			Robot.SUB_DRIVE_BASE.tankDrive(0,0);
+			System.out.println("On Target: " + turnController.onTarget());
 		}
-		System.out.println("set point: " + this.getSetpoint());
-		System.out.println("Current Angle: " + Robot.SUB_DRIVE_BASE.getAngle());
-		System.out.println("Error: " + (Robot.SUB_DRIVE_BASE.getAngle()-this.getSetpoint()));
-		System.out.println("Input: " + this.returnPIDInput());
-		System.out.println("On Target: " + turnController.onTarget());
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 
 	@Override
 	protected void execute() {
+		double setAngle = SmartDashboard.getNumber("setAngle", 0);
+		double kP = SmartDashboard.getNumber("kP", 0.5);
+		setTarget(setAngle);
+		turnController.setPID(kP,0,0);
+		SmartDashboard.putBoolean("tracking",true);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
 	protected boolean isFinished() {
 		System.out.println("On Target: " + turnController.onTarget());
-		return turnController.onTarget();
+		return false;
+		//return turnController.onTarget();
+	}
+
+	public void setTarget(double angle){
+		this.turnController.setSetpoint(angle);
 	}
 
 	// Called once after isFinished returns true
@@ -80,6 +92,7 @@ public class TurnWithGyro extends PIDCommand{
 		Robot.SUB_DRIVE_BASE.tankDrive(0,0);
 		Robot.SUB_DRIVE_BASE.resetGyro();
 		SmartDashboard.putNumber("setAngle", 0);
+		SmartDashboard.putBoolean("tracking",false);
 	}
 
 	// Called when another command which requires one or more of the same

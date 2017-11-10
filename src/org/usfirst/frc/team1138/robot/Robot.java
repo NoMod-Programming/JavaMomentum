@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team1138.robot.commands.DogTrack;
 import org.usfirst.frc.team1138.robot.commands.ExampleCommand;
 import org.usfirst.frc.team1138.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team1138.robot.subsystems.SubDriveBase;
@@ -99,6 +100,8 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		SmartDashboard.putNumber("setAngle", 0);
 		Robot.SUB_DRIVE_BASE.resetGyro();
+        Command dogTrack = new DogTrack();
+        dogTrack.start();
 	}
 
 	/**
