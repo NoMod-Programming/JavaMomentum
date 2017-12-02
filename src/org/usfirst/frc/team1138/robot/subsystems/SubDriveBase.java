@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1138.robot.subsystems;
 
+import com.ctre.PigeonImu;
+import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1138.robot.RobotMap;
 import org.usfirst.frc.team1138.robot.commands.DriveWithJoy;
@@ -16,10 +18,12 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * @version 1.0.0
  */
 public class SubDriveBase extends Subsystem{
-	private CANTalon leftFrontBaseMotor, rightFrontBaseMotor, leftRearBaseMotor, rightRearBaseMotor;
-	private DoubleSolenoid shifterSolenoid, liftSolenoid; 
-	private AHRS gyroAccel;
-	public SubDriveBase() {
+	private CANTalon leftFrontBaseMotor, rightFrontBaseMotor, leftRearBaseMotor, rightRearBaseMotor, gyroTalon;
+	private PigeonImu pigeonImu;
+	private DoubleSolenoid shifterSolenoid, liftSolenoid;
+	//private AHRS gyroAccel; deprecated
+
+    public SubDriveBase() {
 		// Motors
 		// master motors
 		leftFrontBaseMotor = new CANTalon(RobotMap.KLeftFrontBaseTalon);
@@ -43,9 +47,12 @@ public class SubDriveBase extends Subsystem{
 		liftSolenoid = new DoubleSolenoid(RobotMap.KLiftSolenoid1, RobotMap.KLiftSolenoid2); 
 		
 		//Gyro & Accel
-		gyroAccel = new AHRS(Port.kMXP);
-		SmartDashboard.putBoolean("Navx Connection: ", gyroAccel.isConnected());
-		gyroAccel.zeroYaw();
+		//gyroAccel = new AHRS(Port.kMXP);
+        gyroTalon = new CANTalon(3);
+         pigeonImu = new PigeonImu(gyroTalon);
+		SmartDashboard.putNumber("Navx Connection: ", pigeonImu.GetFirmVers());
+		pigeonImu.SetYaw(0);
+		//gyroAccel.zeroYaw();
 		
 		//Encoders 
 		leftFrontBaseMotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
@@ -56,7 +63,8 @@ public class SubDriveBase extends Subsystem{
 		rightFrontBaseMotor.setEncPosition(0);
 		
 		// LiveWindow
-		LiveWindow.addSensor("SubDriveBase", "Gyro", gyroAccel);
+//       LiveWindow.addSensor("SubDriveBase", "Pigeon", (LiveWindowSendable) pigeonImu);
+//		LiveWindow.addSensor("SubDriveBase", "Gyro", gyroAccel);
 //		LiveWindow.addActuator("SubDriveBase", "Left Front Motor", leftFrontBaseMotor);
 //		LiveWindow.addActuator("SubDriveBase", "Right Front Motor", rightFrontBaseMotor);
 //		LiveWindow.addActuator("SubDriveBase", "Left Rear Motor", leftRearBaseMotor);
@@ -90,6 +98,65 @@ public class SubDriveBase extends Subsystem{
 		if(right > RobotMap.KDeadZoneLimit || right < -RobotMap.KDeadZoneLimit) rightFrontBaseMotor.set(right);
 		else rightFrontBaseMotor.set(0);
 	}
+
+    public void drive(double right, double curve) { //TODO fix here!
+        final double leftOutput;
+        final double rightOutput;
+        double m_sensitivity = 1.0;
+        if (curve < 0) {
+            double value = Math.log(-curve);
+            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
+            if (ratio == 0) {
+                ratio = .0000000001;
+            }
+            leftOutput = right / ratio;
+            rightOutput = right;
+            System.out.println("Turn Left: " + "lout: " + leftOutput + "rout: " + rightOutput);
+        } else if (curve > 0) {
+            double value = Math.log(curve);
+            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
+            if (ratio == 0) {
+                ratio = .0000000001;
+            }
+            leftOutput = right;
+            rightOutput = right / ratio;
+            System.out.println("Turn Right: " + "lout: " + leftOutput + "rout: " + rightOutput);
+        } else {
+            leftOutput = right;
+            rightOutput = right;
+            System.out.println("Straight: " + "lout: " + leftOutput + "rout: " + rightOutput);
+        }
+        setLeftRightMotorOutputs(leftOutput, rightOutput);
+    }
+
+    /**
+     * Set the speed of the right and left motors. This is used once an appropriate drive setup
+     * function is called such as twoWheelDrive(). The motors are set to "leftSpeed" and
+     * "rightSpeed" and includes flipping the direction of one side for opposing motors.
+     *
+     * @param leftOutput  The speed to send to the left side of the robot.
+     * @param rightOutput The speed to send to the right side of the robot.
+     */
+    private void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
+        leftFrontBaseMotor.set(limit(leftOutput));
+        leftRearBaseMotor.set(limit(leftOutput));
+        rightFrontBaseMotor.set(-limit(rightOutput));
+        rightRearBaseMotor.set(-limit(rightOutput));
+        System.out.println("lmotor: " + limit(leftOutput) + "rmotor: " + (-limit(rightOutput)));
+    }
+
+    /**
+     * Limit motor values to the -1.0 to +1.0 range.
+     */
+    private static double limit(double number) {
+        if (number > 1.0) {
+            return 1.0;
+        }
+        if (number < -1.0) {
+            return -1.0;
+        }
+        return number;
+    }
 
     /**
      * Shift the base to high position
@@ -130,14 +197,18 @@ public class SubDriveBase extends Subsystem{
      * public method to reset Gyro value
      */
     public void resetGyro() {
-		gyroAccel.zeroYaw();
+        pigeonImu.SetYaw(0);
+		//gyroAccel.zeroYaw();
 	}
 
     /**
      * @return Current Gyro Value in degrees from 180.0 to -180.0
      */
     public double getAngle() {
-		return gyroAccel.getAngle();
+        double[] ypr = new double[3];
+        pigeonImu.GetYawPitchRoll(ypr);
+        return (-ypr[0]);
+//		return gyroAccel.getAngle();
 	}
 
     /**

@@ -36,7 +36,7 @@ public class OI {
 		btnLB = new JoystickButton(xBoxController, RobotMap.KLeftBumper) ;	//Decrease Flywheel Speed
 		btnRB = new JoystickButton(xBoxController, RobotMap.KRightBumpter) ;	//Increase Flywheel Speed
 
-		shiftBtn.whenPressed(new TurnWithGyro());
+//		shiftBtn.whenPressed(new TurnWithGyro());
 		liftBtn.whenPressed(new LiftBase());
 //		buttonX->WhenPressed(new EngageShooter());
 //		buttonY->WhenPressed(new DisengageShooter());

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1138.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1138.robot.OI;
 import org.usfirst.frc.team1138.robot.Robot;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -27,9 +28,16 @@ public class DriveWithJoy extends Command{
 	@Override
 	protected void execute() {
 		// two hand or one hand 
-		if (Robot.SUB_DRIVE_BASE.getLiftState() == DoubleSolenoid.Value.kForward)
-			Robot.SUB_DRIVE_BASE.tankDrive(oi.getRightControllerY(), oi.getRightControllerY());
-		else Robot.SUB_DRIVE_BASE.tankDrive(oi.getLeftControllerY(), oi.getRightControllerY());
+//		if (Robot.SUB_DRIVE_BASE.getLiftState() == DoubleSolenoid.Value.kForward)
+//			Robot.SUB_DRIVE_BASE.tankDrive(oi.getRightControllerY(), oi.getRightControllerY());
+//		else Robot.SUB_DRIVE_BASE.tankDrive(oi.getLeftControllerY(), oi.getRightControllerY());
+        double offset = SmartDashboard.getNumber("setAngle", 0) - Robot.SUB_DRIVE_BASE.getAngle();
+        if (Robot.SUB_DRIVE_BASE.getLiftState() == DoubleSolenoid.Value.kForward){
+            Robot.SUB_DRIVE_BASE.tankDrive(oi.getRightControllerY(), oi.getRightControllerY());
+        }
+        else {
+            Robot.SUB_DRIVE_BASE.drive(oi.getRightControllerY(), offset*0.7); // TODO PLease Fix
+        }
 	}
 
 	// Make this return true when this Command no longer needs to run execute()

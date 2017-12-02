@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1138.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team1138.robot.OI;
 import org.usfirst.frc.team1138.robot.Robot;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.PIDCommand;
@@ -14,20 +15,17 @@ public class TurnWithGyro extends PIDCommand{
 		super("Turn Angle", P, I, D);
 		requires(Robot.SUB_DRIVE_BASE);
 		turnController = this.getPIDController(); 
-		turnController.setInputRange(-180, 180);
+		turnController.setInputRange(-360, 360);
 		turnController.setOutputRange(-1, 1);
 		turnController.setAbsoluteTolerance(1.5);
 		turnController.setContinuous(true);
-
-		LiveWindow.addActuator("Please Work", "PID CONTROLLER", turnController);
 		System.out.println("Inited");
 		Robot.SUB_DRIVE_BASE.resetGyro();
-	}
+    }
 
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-
 	}
 	
 	@Override
@@ -68,9 +66,10 @@ public class TurnWithGyro extends PIDCommand{
 	@Override
 	protected void execute() {
 		double setAngle = SmartDashboard.getNumber("setAngle", 0);
-		double kP = SmartDashboard.getNumber("kP", 0.5);
+		//double kP = SmartDashboard.getNumber("kP", 1.0);
+
 		setTarget(setAngle);
-		turnController.setPID(kP,0,0);
+		//turnController.setPID(kP,0,0);
 		SmartDashboard.putBoolean("tracking",true);
 	}
 

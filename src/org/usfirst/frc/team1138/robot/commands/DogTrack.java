@@ -1,9 +1,7 @@
 package org.usfirst.frc.team1138.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team1138.robot.Robot;
 
 public class DogTrack extends Command{
     private TurnWithGyro turn = null;
@@ -23,17 +21,6 @@ public class DogTrack extends Command{
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
-//        double targetAngle = SmartDashboard.getNumber("setAngle", 0);
-//        if (targetAngle != 0 && turn == null) {
-//            turn = new TurnWithGyro(targetAngle);
-//            turn.start();
-//        }
-//
-//        if(targetAngle != 0 && turn != null && turn.isFinished()) {
-//            turn.cancel();
-//            turn = new TurnWithGyro(targetAngle);
-//            turn.start();
-//        }
 
     }
 

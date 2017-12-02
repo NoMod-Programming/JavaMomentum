@@ -4,12 +4,14 @@ package org.usfirst.frc.team1138.robot;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1138.robot.commands.DogTrack;
 import org.usfirst.frc.team1138.robot.commands.ExampleCommand;
+import org.usfirst.frc.team1138.robot.commands.TurnWithGyro;
 import org.usfirst.frc.team1138.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team1138.robot.subsystems.SubDriveBase;
 
@@ -24,10 +26,11 @@ import org.usfirst.frc.team1138.robot.subsystems.SubDriveBase;
  */
 public class Robot extends IterativeRobot {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-	public static SubDriveBase SUB_DRIVE_BASE; 
+	public static SubDriveBase SUB_DRIVE_BASE;
 	private static OI oi;
 	private Command autonomousCommand;
 	private SendableChooser<Command> chooser = new SendableChooser<>();
+	private TurnWithGyro turn;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -102,8 +105,8 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		SmartDashboard.putNumber("setAngle", 0);
 		Robot.SUB_DRIVE_BASE.resetGyro();
-        Command dogTrack = new DogTrack();
-        dogTrack.start();
+//		Command dogTrack = new DogTrack();
+//		dogTrack.start();
 	}
 
 	/**
@@ -113,6 +116,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		SmartDashboard.putNumber("angle", Robot.SUB_DRIVE_BASE.getAngle());
+		SmartDashboard.putBoolean("Running",true);
 	}
 
 	/**
