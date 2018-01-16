@@ -1,11 +1,8 @@
 package frc.team1138.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1138.robot.commands.LiftBase;
-import frc.team1138.robot.commands.ShiftBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.team1138.robot.commands.TurnWithGyro;
 
 /**
  * This class is the glue that binds the controls on the physical operator

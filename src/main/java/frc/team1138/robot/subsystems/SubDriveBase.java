@@ -1,29 +1,28 @@
 package frc.team1138.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team1138.robot.Robot;
 import frc.team1138.robot.RobotMap;
 import frc.team1138.robot.commands.DriveWithJoy;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.SensorCollection;
 import com.ctre.phoenix. motorcontrol.can.TalonSRX;
 //import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 //import edu.wpi.first.wpilibj.PWMTalonSRX;
-import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * @author Zheyuan Hu
  * @version 1.0.0
  */
 public class SubDriveBase extends Subsystem{
-	private TalonSRX leftFrontBaseMotor, rightFrontBaseMotor, leftRearBaseMotor, rightRearBaseMotor, gyroTalon;
+	private TalonSRX leftFrontBaseMotor, rightFrontBaseMotor,  rightRearBaseMotor, gyroTalon;
+	private TalonSRX leftRearBaseMotor;
 	private PigeonIMU PigeonIMU;
 	private DoubleSolenoid shifterSolenoid, liftSolenoid;
 	//private AHRS gyroAccel; deprecated
@@ -38,10 +37,12 @@ public class SubDriveBase extends Subsystem{
 		rightRearBaseMotor = new TalonSRX(RobotMap.KRightRearBaseTalon);
 		// Config the masters 
 		leftFrontBaseMotor.setInverted(true);
+		//leftRearBaseMotor.setInverted(true);
 //		initSafeMotor();
 		// Config the slaves
-		leftRearBaseMotor.set(ControlMode.Follower,leftFrontBaseMotor.getDeviceID());
-		rightRearBaseMotor.set(ControlMode.Follower,rightFrontBaseMotor.getDeviceID());
+		leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
+		rightRearBaseMotor.set(ControlMode.Follower, rightFrontBaseMotor.getDeviceID());
+
 		
 		// Solenoids 
 		shifterSolenoid = new DoubleSolenoid(RobotMap.KShifterSolenoid1, RobotMap.KShifterSolenoid2);
@@ -49,7 +50,7 @@ public class SubDriveBase extends Subsystem{
 		
 		//Gyro & Accel
 		//gyroAccel = new AHRS(Port.kMXP);	
-        gyroTalon = new TalonSRX(3);
+        gyroTalon = new TalonSRX(10);
         PigeonIMU = new PigeonIMU(gyroTalon);
 		SmartDashboard.putNumber("Navx Connection: ", PigeonIMU.getFirmwareVersion());
 		PigeonIMU.setYaw(0,0);
@@ -70,6 +71,7 @@ public class SubDriveBase extends Subsystem{
 //		LiveWindow.addActuator("SubDriveBase", "Right Front Motor", rightFrontBaseMotor);
 //		LiveWindow.addActuator("SubDriveBase", "Left Rear Motor", leftRearBaseMotor);
 //		LiveWindow.addActuator("SubDriveBase", "Right Rear Motor", rightRearBaseMotor);
+//		LiveWindow.add(leftRearBaseMotor.init);
 	}
 
 	public void initDefaultCommand() {
@@ -97,58 +99,92 @@ public class SubDriveBase extends Subsystem{
     	
 		if(left > RobotMap.KDeadZoneLimit || left < -RobotMap.KDeadZoneLimit) 
 		{
-			leftFrontBaseMotor.set(ControlMode.PercentOutput,left);
+			leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
+			leftFrontBaseMotor.set(ControlMode.PercentOutput, left);
+			leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
 			
-			SmartDashboard.putNumber("Tank Drive", leftFrontBaseMotor.getMotorOutputVoltage()); 
+			SmartDashboard.putNumber("leftFrontBaseMotor", leftFrontBaseMotor.getMotorOutputPercent()); 
+			SmartDashboard.putNumber("leftRearBaseMotor", leftRearBaseMotor.getMotorOutputPercent()); 
+			SmartDashboard.putNumber("leftFrontBaseMotor ID", leftFrontBaseMotor.getDeviceID()); 
+			SmartDashboard.putString("leftRearBaseMotor mode", leftRearBaseMotor.getControlMode().toString());
 		}
 		else
 		{
-			leftFrontBaseMotor.set(ControlMode.PercentOutput,0);
-			SmartDashboard.getString("Not working","No");
+			leftFrontBaseMotor.set(ControlMode.PercentOutput, 0);
 		}
 		
 		
 		if(right > RobotMap.KDeadZoneLimit || right < -RobotMap.KDeadZoneLimit) 
 		{
-			rightFrontBaseMotor.set(ControlMode.PercentOutput,right);
-			SmartDashboard.putNumber("Tank Drive", rightFrontBaseMotor.getMotorOutputVoltage()); 
+			rightFrontBaseMotor.set(ControlMode.PercentOutput, right);
+			SmartDashboard.putNumber("rightFrontBaseMotor", rightFrontBaseMotor.getMotorOutputPercent()); 
+			SmartDashboard.putNumber("rightRearBaseMotor", rightRearBaseMotor.getMotorOutputPercent()); 
 		}
 		else
 		{
-			rightFrontBaseMotor.set(ControlMode.PercentOutput,0);
-			SmartDashboard.getString("Not working","No");
+			rightFrontBaseMotor.set(ControlMode.PercentOutput, 0);
 		}
 	}
-
-    public void drive(double right, double curve) { //TODO fix here!
-        final double leftOutput;
-        final double rightOutput;
-        double m_sensitivity = 1.0;
-        if (curve < 0) {
-            double value = Math.log(-curve);
-            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
-            if (ratio == 0) {
-                ratio = .0000000001;
-            }
-            leftOutput = right / ratio;
-            rightOutput = right;
-            System.out.println("Turn Left: " + "lout: " + leftOutput + "rout: " + rightOutput);
-        } else if (curve > 0) {
-            double value = Math.log(curve);
-            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
-            if (ratio == 0) {
-                ratio = .0000000001;
-            }
-            leftOutput = right;
-            rightOutput = right / ratio;
-            System.out.println("Turn Right: " + "lout: " + leftOutput + "rout: " + rightOutput);
-        } else {
-            leftOutput = right;
-            rightOutput = right;
-            System.out.println("Straight: " + "lout: " + leftOutput + "rout: " + rightOutput);
-        }
-        setLeftRightMotorOutputs(leftOutput, rightOutput);
-    }
+    
+    // TODO FIX THIS!
+	public double UpdateTurnSpeed(double TargetAngle, double LogValue)
+	{
+		double ModifiedAngle = this.getAngle();
+		
+		while(ModifiedAngle < 0)
+			ModifiedAngle += 360;
+		while(TargetAngle < 0)
+			TargetAngle += 360;
+		
+		double CounterClockwiseAngle = TargetAngle > ModifiedAngle ? TargetAngle - ModifiedAngle : (360 - ModifiedAngle) + TargetAngle;
+		double ClockwiseAngle = TargetAngle > ModifiedAngle ? (360 - TargetAngle) + ModifiedAngle : ModifiedAngle - TargetAngle;
+		//Determines the angle of the right and left turns needed to reach the target angle in order to later decide the shortest turn
+		
+		double Speed = Math.log(Math.abs(ModifiedAngle - TargetAngle)) / Math.log(LogValue + 1);
+		//NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+		//defaultFormat.setMinimumFractionDigits(2);
+		//double PercentSpeed = defaultFormat.format(Speed);
+		//double NegativePercentSpeed = defaultFormat.format(-1 * Speed);
+		SmartDashboard.putNumber("Speed", Speed);
+		//As the difference between the target angle and the robot's angle gets smaller, the robot turns more slowly in order to minimize overshoot
+		
+		if(CounterClockwiseAngle < ClockwiseAngle)
+			this.tankDrive(Speed, -Speed); //Turn counter clockwise
+		else
+			this.tankDrive(-Speed, Speed); //Turn clockwise
+			
+		return Math.abs(TargetAngle - ModifiedAngle); //Return the distance from the target angle
+	}
+    
+//    public void drive(double right, double curve) { //TODO fix here!
+//        final double leftOutput;
+//        final double rightOutput;
+//        double m_sensitivity = 1.0;
+//        if (curve < 0) {
+//            double value = Math.log(-curve);
+//            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
+//            if (ratio == 0) {
+//                ratio = .0000000001;
+//            }
+//            leftOutput = right / ratio;
+//            rightOutput = right;
+//            System.out.println("Turn Left: " + "lout: " + leftOutput + "rout: " + rightOutput);
+//        } else if (curve > 0) {
+//            double value = Math.log(curve);
+//            double ratio = (value - m_sensitivity) / (value + m_sensitivity);
+//            if (ratio == 0) {
+//                ratio = .0000000001;
+//            }
+//            leftOutput = right;
+//            rightOutput = right / ratio;
+//            System.out.println("Turn Right: " + "lout: " + leftOutput + "rout: " + rightOutput);
+//        } else {
+//            leftOutput = right;
+//            rightOutput = right;
+//            System.out.println("Straight: " + "lout: " + leftOutput + "rout: " + rightOutput);
+//        }
+//        setLeftRightMotorOutputs(leftOutput, rightOutput);
+//    }
 
     /**
      * Set the speed of the right and left motors. This is used once an appropriate drive setup
@@ -158,26 +194,26 @@ public class SubDriveBase extends Subsystem{
      * @param leftOutput  The speed to send to the left side of the robot.
      * @param rightOutput The speed to send to the right side of the robot.
      */
-    private void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
-        leftFrontBaseMotor.set(ControlMode.PercentOutput,limit(leftOutput));
-        leftRearBaseMotor.set(ControlMode.PercentOutput,limit(leftOutput));
-        rightFrontBaseMotor.set(ControlMode.PercentOutput,-limit(rightOutput));
-        rightRearBaseMotor.set(ControlMode.PercentOutput,-limit(rightOutput));
-        System.out.println("lmotor: " + limit(leftOutput) + "rmotor: " + (-limit(rightOutput)));
-    }
+//    private void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
+//        leftFrontBaseMotor.set(ControlMode.PercentOutput, limit(leftOutput));
+//        leftRearBaseMotor.set(ControlMode.PercentOutput, limit(leftOutput));
+//        rightFrontBaseMotor.set(ControlMode.PercentOutput, -limit(rightOutput));
+//        rightRearBaseMotor.set(ControlMode.PercentOutput, -limit(rightOutput));
+//        System.out.println("lmotor: " + limit(leftOutput) + "rmotor: " + (-limit(rightOutput)));
+//    }
 
     /**
      * Limit motor values to the -1.0 to +1.0 range.
      */
-    private static double limit(double number) {
-        if (number > 1.0) {
-            return 1.0;
-        }
-        if (number < -1.0) {
-            return -1.0;
-        }
-        return number;
-    }
+//    private static double limit(double number) {
+//        if (number > 1.0) {
+//            return 1.0;
+//        }
+//        if (number < -1.0) {
+//            return -1.0;
+//        }
+//        return number;
+//    }
 
     /**
      * Shift the base to high position
@@ -222,6 +258,12 @@ public class SubDriveBase extends Subsystem{
 		//gyroAccel.zeroYaw();
 	}
     
+    public void resetEncoders() {
+		leftFrontBaseMotor.getSensorCollection().setQuadraturePosition(0,0);
+		rightFrontBaseMotor.getSensorCollection().setQuadraturePosition(0,0);
+	}
+    
+    // TODO FIX THIS
     public void DriveForward(float distance, float speed) {
     	float encoderReference = leftFrontBaseMotor.getSensorCollection().getQuadraturePosition(); //Alex Harris fixed it
     	float encoderReference2 = rightFrontBaseMotor.getSensorCollection().getQuadraturePosition(); 
@@ -244,6 +286,16 @@ public class SubDriveBase extends Subsystem{
         return (-ypr[0]);
 //		return gyroAccel.getAngle();
 	}
+    
+    public double getLeftEncoderValue()
+    {
+    	return leftFrontBaseMotor.getSensorCollection().getQuadraturePosition();
+    }
+    
+    public double getRightEncoderValue()
+    {
+    	return rightFrontBaseMotor.getSensorCollection().getQuadraturePosition();
+    }
 
     /**
      * @return the state of the lift solenoid

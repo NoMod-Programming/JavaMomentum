@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1138.robot.commands.DogTrack;
 import frc.team1138.robot.commands.ExampleCommand;
+import frc.team1138.robot.commands.TestAutonomousCommand;
 import frc.team1138.robot.commands.TurnWithGyro;
 import frc.team1138.robot.subsystems.ExampleSubsystem;
 import frc.team1138.robot.subsystems.SubDriveBase;
@@ -30,6 +31,7 @@ public class Robot extends IterativeRobot {
 	private static OI oi;
 	private Command autonomousCommand;
 	private SendableChooser<Command> chooser = new SendableChooser<>();
+	//private SendableChooser chooser;
 	private TurnWithGyro turn;
 
 	/**
@@ -40,10 +42,12 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		SUB_DRIVE_BASE = new SubDriveBase();
 		oi = new OI();
-		chooser.addDefault("Default Auto", new ExampleCommand());
-		SmartDashboard.putData("Auto mode", chooser);
+		//chooser.addDefault("Default Auto", new ExampleCommand());
+		chooser.addDefault("Test Auton", new TestAutonomousCommand()); //Change this from the default if I haven't already -Chris
+		SmartDashboard.putData("Autonomous Mode Chooser", chooser);
+		SmartDashboard.putData("Test Auton", new TestAutonomousCommand());
 //		SmartDashboard.putData("PID TURN", new TurnWithGyro(0));
-		// chooser.addObject("My Auto", new MyAutoCommand());
+			//chooser.addObject("My Auto", new MyAutoCommand());
 //        Robot.SUB_DRIVE_BASE.resetGyro(); // reset Gyro at the start of the Robot
     }
 
@@ -130,6 +134,5 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
 	}
 }
