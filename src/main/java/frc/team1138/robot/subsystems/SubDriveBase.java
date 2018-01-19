@@ -28,6 +28,9 @@ public class SubDriveBase extends Subsystem{
 	//private AHRS gyroAccel; deprecated
 
     public SubDriveBase() {
+		//Gyro & Accel *Note this declaration needs to come before the motor declarations
+		//gyroAccel = new AHRS(Port.kMXP);
+    	gyroTalon = new TalonSRX(3);
 		// Motors
 		// master motors
 		leftFrontBaseMotor = new TalonSRX(RobotMap.KLeftFrontBaseTalon);
@@ -37,7 +40,7 @@ public class SubDriveBase extends Subsystem{
 		rightRearBaseMotor = new TalonSRX(RobotMap.KRightRearBaseTalon);
 		// Config the masters 
 		leftFrontBaseMotor.setInverted(true);
-		//leftRearBaseMotor.setInverted(true);
+		leftRearBaseMotor.setInverted(true);
 //		initSafeMotor();
 		// Config the slaves
 		leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
@@ -46,11 +49,8 @@ public class SubDriveBase extends Subsystem{
 		
 		// Solenoids 
 		shifterSolenoid = new DoubleSolenoid(RobotMap.KShifterSolenoid1, RobotMap.KShifterSolenoid2);
-		liftSolenoid = new DoubleSolenoid(RobotMap.KLiftSolenoid1, RobotMap.KLiftSolenoid2); 
-		
-		//Gyro & Accel
-		//gyroAccel = new AHRS(Port.kMXP);	
-        gyroTalon = new TalonSRX(10);
+		liftSolenoid = new DoubleSolenoid(RobotMap.KLiftSolenoid1, RobotMap.KLiftSolenoid2);	
+        
         PigeonIMU = new PigeonIMU(gyroTalon);
 		SmartDashboard.putNumber("Navx Connection: ", PigeonIMU.getFirmwareVersion());
 		PigeonIMU.setYaw(0,0);
@@ -99,9 +99,9 @@ public class SubDriveBase extends Subsystem{
     	
 		if(left > RobotMap.KDeadZoneLimit || left < -RobotMap.KDeadZoneLimit) 
 		{
-			leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
+			
 			leftFrontBaseMotor.set(ControlMode.PercentOutput, left);
-			leftRearBaseMotor.set(ControlMode.Follower, leftFrontBaseMotor.getDeviceID());
+			
 			
 			SmartDashboard.putNumber("leftFrontBaseMotor", leftFrontBaseMotor.getMotorOutputPercent()); 
 			SmartDashboard.putNumber("leftRearBaseMotor", leftRearBaseMotor.getMotorOutputPercent()); 
@@ -136,22 +136,34 @@ public class SubDriveBase extends Subsystem{
 		while(TargetAngle < 0)
 			TargetAngle += 360;
 		
-		double CounterClockwiseAngle = TargetAngle > ModifiedAngle ? TargetAngle - ModifiedAngle : (360 - ModifiedAngle) + TargetAngle;
-		double ClockwiseAngle = TargetAngle > ModifiedAngle ? (360 - TargetAngle) + ModifiedAngle : ModifiedAngle - TargetAngle;
+		double CounterClockwiseAngle = 0;
+		if(TargetAngle > ModifiedAngle)
+			CounterClockwiseAngle = TargetAngle - ModifiedAngle;
+		else
+			CounterClockwiseAngle = (360 - ModifiedAngle) + TargetAngle;
+		
+		double ClockwiseAngle = 0;
+		if(TargetAngle > ModifiedAngle)
+			ClockwiseAngle = (360 - TargetAngle) + ModifiedAngle;
+		else
+			ClockwiseAngle = ModifiedAngle - TargetAngle;
 		//Determines the angle of the right and left turns needed to reach the target angle in order to later decide the shortest turn
 		
-		double Speed = Math.log(Math.abs(ModifiedAngle - TargetAngle)) / Math.log(LogValue + 1);
-		//NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-		//defaultFormat.setMinimumFractionDigits(2);
-		//double PercentSpeed = defaultFormat.format(Speed);
-		//double NegativePercentSpeed = defaultFormat.format(-1 * Speed);
+		double Speed = Math.log(Math.abs(ModifiedAngle - TargetAngle) + 1) / Math.log(LogValue + 1);
+		Speed = Math.floor(Speed * 100) / 100;
+		if(Speed > 1)
+			Speed = 1;
+		if(-0.05 < Speed && Speed < 0.05)
+			Speed = 0;
+		if(Speed < -1)
+			Speed = -1;
 		SmartDashboard.putNumber("Speed", Speed);
 		//As the difference between the target angle and the robot's angle gets smaller, the robot turns more slowly in order to minimize overshoot
 		
 		if(CounterClockwiseAngle < ClockwiseAngle)
-			this.tankDrive(Speed, -Speed); //Turn counter clockwise
+			this.tankDrive(-Speed, Speed); //Turn counter clockwise
 		else
-			this.tankDrive(-Speed, Speed); //Turn clockwise
+			this.tankDrive(Speed, -Speed); //Turn clockwise
 			
 		return Math.abs(TargetAngle - ModifiedAngle); //Return the distance from the target angle
 	}

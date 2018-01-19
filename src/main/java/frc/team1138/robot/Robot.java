@@ -15,6 +15,7 @@ import frc.team1138.robot.commands.TestAutonomousCommand;
 import frc.team1138.robot.commands.TurnWithGyro;
 import frc.team1138.robot.subsystems.ExampleSubsystem;
 import frc.team1138.robot.subsystems.SubDriveBase;
+import frc.team1138.robot.commands.DriveForward;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,8 +43,9 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		SUB_DRIVE_BASE = new SubDriveBase();
 		oi = new OI();
-		//chooser.addDefault("Default Auto", new ExampleCommand());
-		chooser.addDefault("Test Auton", new TestAutonomousCommand()); //Change this from the default if I haven't already -Chris
+		chooser.addDefault("DriveForward", new DriveForward());
+		//chooser.addDefault("Turn With Gyro", new TurnWithGyro());
+		//chooser.addDefault("Test Auton", new TestAutonomousCommand()); //Change this from the default if I haven't already -Chris
 		SmartDashboard.putData("Autonomous Mode Chooser", chooser);
 		SmartDashboard.putData("Test Auton", new TestAutonomousCommand());
 //		SmartDashboard.putData("PID TURN", new TurnWithGyro(0));
@@ -119,8 +121,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		SmartDashboard.putNumber("angle", Robot.SUB_DRIVE_BASE.getAngle());
-		SmartDashboard.putBoolean("Running",true);
+//		SmartDashboard.putNumber("angle", Robot.SUB_DRIVE_BASE.getAngle());
+//		SmartDashboard.putBoolean("Running",true);
 	}
 
 	/**

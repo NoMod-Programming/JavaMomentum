@@ -11,9 +11,10 @@ public class DriveForward extends PIDCommand{
 
 	public DriveForward() {
 		super("Drive Distance", P, I, D);
+		SmartDashboard.putNumber("setEncoder", 0);
 		requires(Robot.SUB_DRIVE_BASE);
 		driveController = this.getPIDController(); 
-		driveController.setInputRange(-4095, 4095); //TODO find this out
+		driveController.setInputRange(-4096, 4096); //TODO find this out
 		driveController.setOutputRange(-1, 1);
 		driveController.setAbsoluteTolerance(10); //TODO find this out too
 		driveController.setContinuous(true);
@@ -36,12 +37,13 @@ public class DriveForward extends PIDCommand{
 	protected void usePIDOutput(double output) {
 		// The side with the GEAR IS THE FRONT!
 		if (!driveController.onTarget()){
-			if (this.returnPIDInput()-this.getSetpoint() > 0) { // need to move forward
+			if (this.returnPIDInput()-this.getSetpoint() > -10) { // need to move forward
 				System.out.println("Move Forward");
 				System.out.println("Left Motor: " + (output) + "Right Motor: " + (output));
+				SmartDashboard.putNumber("Distance From Target", this.returnPIDInput()-this.getSetpoint());
 				Robot.SUB_DRIVE_BASE.tankDrive(output, output);
 			}
-			else if (this.returnPIDInput()-this.getSetpoint() < 0) { // need to move backward
+			else if (this.returnPIDInput()-this.getSetpoint() < 10) { // need to move backward
 				System.out.println("Move Backward");
 				System.out.println("Left Motor: " + (-output) + "Right Motor: " + (-output));
 				Robot.SUB_DRIVE_BASE.tankDrive(-output, -output);
@@ -74,7 +76,7 @@ public class DriveForward extends PIDCommand{
 	@Override
 	protected boolean isFinished() {
 		System.out.println("On Target: " + driveController.onTarget());
-		return true;
+		return false;
 		//return driveController.onTarget();
 	}
 

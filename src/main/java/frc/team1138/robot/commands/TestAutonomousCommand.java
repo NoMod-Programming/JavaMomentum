@@ -13,6 +13,7 @@ import frc.team1138.robot.Robot;
  * @version 1.0.0
  */
 public class TestAutonomousCommand extends Command {
+	double DistFromTarget = 0;
 	
 	public TestAutonomousCommand() {
 		// Use requires() here to declare subsystem dependencies
@@ -28,14 +29,21 @@ public class TestAutonomousCommand extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
-		double DistFromTarget = Robot.SUB_DRIVE_BASE.UpdateTurnSpeed(90, 90);
+		double TargetAngle = SmartDashboard.getNumber("setAngle", 0);
+		DistFromTarget = Robot.SUB_DRIVE_BASE.UpdateTurnSpeed(TargetAngle, 180);
 		SmartDashboard.putNumber("Distance From Target", DistFromTarget);
+		SmartDashboard.putNumber("Gyro", Robot.SUB_DRIVE_BASE.getAngle());
+		//flag++;
+		//Robot.SUB_DRIVE_BASE.tankDrive(1.0, 1.0);
+		//SmartDashboard.putNumber("Running", flag);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
 	protected boolean isFinished() {
-		return true;
+		if(DistFromTarget <= 1.5)
+			return true;
+		return false;
 	}
 
 	// Called once after isFinished returns true
